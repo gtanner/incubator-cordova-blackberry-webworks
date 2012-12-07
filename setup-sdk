@@ -1,0 +1,13 @@
+#! /bin/sh
+
+bbndk="/Applications/bbndk"
+echo "BlackBerry 10 NDK location ($bbndk): \c"
+read newbbndk
+[ -n "$newbbndk" ] && bbndk=$newbbndk
+
+git clone https://github.com/blackberry/BB10-Webworks-Packager.git sdk
+cd sdk
+source "${bbndk}/bbndk-env.sh"
+./configure
+jake
+cd ..

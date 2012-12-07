@@ -62,6 +62,8 @@ trap on_exit EXIT
 ANT="$(which ant)"
 
 MANIFEST_PATH="$PROJECT_PATH/www/config.xml"
+PROPERTIES_PATH="$PROJECT_PATH/project.properties"
+SDK_PATH="$BUILD_PATH/sdk/target/zip"
 
 # compile cordova.js and cordova.jar if in source, ignore if in distribution
 if [ ! -e "$BUILD_PATH/www/ext/cordova-$VERSION.jar" ] && [ -d "$BUILD_PATH/framework" ]
@@ -86,6 +88,20 @@ else
 	cp -r "$BUILD_PATH/sample/." "$PROJECT_PATH"
 fi
 
+if [ ! -e "$SDK_PATH" ]
+then
+    read -p "Setup BlackBerry 10 SDK (y/n)?"
+    if [ "$REPLY" == "y" ]
+    then
+        ./setup-sdk
+    else
+        echo "you can run ./setup-sdk later if you change your mind"
+    fi
+fi
+
 # interpolate the app name into config.xml
 echo "Updating config.xml ..."
 sed -i '' -e "s/__NAME__/${APPNAME}/g" "$MANIFEST_PATH"
+
+echo "Updating the BlackBerry 10 SDK path"
+sed -i '' -e "s/__SDK__/$(echo ${SDK_PATH} | sed -e 's/[\/&]/\\&/g')/g" "$PROPERTIES_PATH"
